@@ -1,78 +1,54 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { category } from "../assets/Data";
-import { ref, push } from "firebase/database";
 import FileUpload from "./FileUpload";
+import FormValidation from "../component/FormValidation";
 
 const Form = () => {
-  const [itemName, setItemName] = useState("");
-  const [itemCategory, setItemCategory] = useState("");
-  const [itemSize, setItemSize] = useState("");
-  const [itemPrice, setItemPrice] = useState("");
-  const [itemCost, setItemCost] = useState("");
-  const [itemStock, setItemStock] = useState("");
-  const [itemImage, setItemImage] = useState(null);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const newItem = {
-      category: itemCategory,
-      name: itemName,
-      size: itemSize,
-      price: itemPrice,
-      cost: itemCost,
-      stock: itemStock,
-    };
-    console.log(newItem);
-    // Here you would typically send the newItem to your database
-  };
-
-  const handleImageChange = (e) => {
-    if (e.target.files[0]) {
-      setItemImage(e.target.files[0]);
-    }
-  };
-
-  const triggerFileInput = () => {
-    document.getElementById("fileInput").click();
-  };
+  const { values, errors, handleChange, handleSubmit } = FormValidation();
+  const [selectedCategory, setSelectedCategory] = useState("");
 
   return (
-    <div className="max-w-md mx-auto bg-blue-700 shadow-lg rounded-lg p-4 sm:p-6 md:p-8">
-      <form className="space-y-4" onSubmit={handleSubmit}>
-        <div className="flex gap-3">
-          <select
-            className="w-full h-10 border-gray-300 border rounded-md"
-            value={itemCategory}
-            onChange={(e) => setItemCategory(e.target.value)}
-          >
-            <option value="" disabled>
-              Select Category
+    <form className="space-y-4" onSubmit={handleSubmit}>
+      <div className="flex flex-col sm:flex-row gap-4">
+        <select
+          className="w-full h-12 border-gray-300 border rounded-lg text-lg px-2"
+          name="selectedCategory"
+          value={values.selectedCategory}
+          onChange={handleChange}
+        >
+          <option value="" disabled>
+            Select Category
+          </option>
+          {category.map((cat) => (
+            <option key={cat.name} value={cat.name}>
+              {cat.name}
             </option>
-            {category.map((cat) => (
-              <option
-                className="font-semibold px-2"
-                key={cat.name}
-                value={cat.name}
-              >
-                {cat.name}
-              </option>
-            ))}
-          </select>
+          ))}
+        </select>
 
-          <input
-            type="text"
-            placeholder="Item Name"
-            className="w-full h-10 border-gray-300 border rounded-md px-3"
-            value={itemName}
-            onChange={(e) => setItemName(e.target.value)}
-          />
-        </div>
+        <input
+          type="text"
+          placeholder="Item Name"
+          name="itemName"
+          value={values.itemName}
+          onChange={handleChange}
+          className={`w-full h-12 border-gray-300 border rounded-lg text-lg px-4 ${
+            errors.itemName ? "border-red-500" : ""
+          }`}
+        />
+      </div>
+      {errors.itemName && (
+        <div className="text-red-500">Please enter item name</div>
+      )}
 
-        {itemCategory === "Fries" || itemCategory === "Beverages" ? (
+      {(values.selectedCategory === "Beverages" ||
+        values.selectedCategory === "Fries") && (
+        <div>
           <select
-            className="w-full h-10 border-gray-300 border rounded-md"
-            value={itemSize}
-            onChange={(e) => setItemSize(e.target.value)}
+            className="w-full h-12 border-gray-300 border rounded-lg text-lg px-2"
+            name="size"
+            value={values.size}
+            onChange={handleChange}
           >
             <option value="" disabled>
               Select Size
@@ -81,37 +57,54 @@ const Form = () => {
             <option value="Medium">Medium</option>
             <option value="Large">Large</option>
           </select>
-        ) : null}
-        <input
-          type="number"
-          placeholder="Price"
-          className="w-full h-10 border-gray-300 border rounded-md px-3"
-          value={itemPrice}
-          onChange={(e) => setItemPrice(e.target.value)}
-        />
-        <input
-          type="number"
-          placeholder="Cost"
-          className="w-full h-10 border-gray-300 border rounded-md px-3"
-          value={itemCost}
-          onChange={(e) => setItemCost(e.target.value)}
-        />
-        <input
-          type="number"
-          placeholder="Amount in Stock"
-          className="w-full h-10 border-gray-300 border rounded-md px-3"
-          value={itemStock}
-          onChange={(e) => setItemStock(e.target.value)}
-        />
-        <FileUpload />
-        <button
-          type="submit"
-          className="w-full h-10 bg-gray-500 text-white rounded-md hover:bg-blue-600"
-        >
-          Add Item
-        </button>
-      </form>
-    </div>
+          {errors.size && (
+            <div className="text-red-500">Please select size</div>
+          )}
+        </div>
+      )}
+
+      <input
+        type="number"
+        placeholder="Price"
+        name="price"
+        value={values.price}
+        onChange={handleChange}
+        className={`w-full h-12 border-gray-300 border rounded-lg text-lg px-4 ${
+          errors.price ? "border-red-500" : ""
+        }`}
+      />
+      {errors.price && <div className="text-red-500">Please enter price</div>}
+
+      <input
+        type="number"
+        placeholder="Cost"
+        name="cost"
+        value={values.cost}
+        onChange={handleChange}
+        className={`w-full h-12 border-gray-300 border rounded-lg text-lg px-4 ${
+          errors.cost ? "border-red-500" : ""
+        }`}
+      />
+      {errors.cost && <div className="text-red-500">Please enter cost</div>}
+
+      <input
+        type="number"
+        placeholder="Amount in Stock"
+        name="stock"
+        value={values.stock}
+        onChange={handleChange}
+        className={`w-full h-12 border-gray-300 border rounded-lg text-lg px-4 ${
+          errors.stock ? "border-red-500" : ""
+        }`}
+      />
+      {errors.stock && (
+        <div className="text-red-500">Please enter stock amount</div>
+      )}
+      <FileUpload />
+      <button className="w-full h-12 bg-blue-600 text-white rounded-lg text-lg hover:bg-blue-700 transition-colors">
+        Add Item
+      </button>
+    </form>
   );
 };
 
