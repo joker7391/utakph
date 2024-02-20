@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FaUpload } from "react-icons/fa";
-import fieldConfig from "../assets/data";
+import { fieldConfig } from "../../assets/data";
+
 import PreviewModal from "./PreviewModal";
 
 const FastFoodForm = () => {
