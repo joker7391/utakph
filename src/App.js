@@ -1,14 +1,10 @@
 import "./App.css";
-import Header from "./component/Header";
 import Home from "./pages/Home";
 
 function App() {
   return (
-    <div className="">
-      <Header />
-      <div className="">
-        <Home />
-      </div>
+    <div className="bg-primary-red min-h-screen flex justify-center items-center">
+      <Home />
     </div>
   );
 }
