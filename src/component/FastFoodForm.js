@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaUpload } from "react-icons/fa";
 import { fieldConfig } from "../assets/data";
 import PreviewModal from "./PreviewModal";
@@ -14,23 +14,32 @@ const FastFoodForm = () => {
     image: "",
   });
   const [showModal, setShowModal] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [imagePreview, setImagePreview] = useState(null);
+
+  useEffect(() => {
+    setImagePreview(
+      formData.image ? URL.createObjectURL(formData.image) : null
+    );
+  }, [formData.image]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+
+    for (let i = 1; i <= 100; i++) {
+      setUploadProgress(i);
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    }
+
+    setLoading(false);
     setShowModal(true);
-  };
-
-  const handleCloseModal = () => {
-    setShowModal(false);
-  };
-
-  const onDeleteImage = () => {
-    setFormData({ ...formData, image: "" });
   };
 
   return (
@@ -73,31 +82,48 @@ const FastFoodForm = () => {
             )}
           </div>
         ))}
-        <div className="mb-4">
-          <label
-            htmlFor="file"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Upload Image
-          </label>
-          <input
-            type="file"
-            id="file"
-            className="hidden"
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                image: URL.createObjectURL(e.target.files[0]),
-              })
-            }
-          />
-          <label
-            htmlFor="file"
-            className="inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer"
-          >
-            <FaUpload className="inline-block mr-2" /> Choose File
-          </label>
+        <div className="mb-4 flex justify-between">
+          <div>
+            <label
+              htmlFor="file"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Upload Image
+            </label>
+            <input
+              type="file"
+              id="file"
+              className="hidden"
+              onChange={(e) =>
+                setFormData({ ...formData, image: e.target.files[0] })
+              }
+            />
+            <label
+              htmlFor="file"
+              className="inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer"
+            >
+              <FaUpload className="inline-block mr-2" /> Choose File
+            </label>
+          </div>
+
+          {imagePreview && (
+            <div className="mt-2">
+              <img
+                src={imagePreview}
+                alt="Preview"
+                className="w-24 h-24 object-cover"
+              />
+            </div>
+          )}
         </div>
+        {loading && (
+          <div className="mt-2 bg-gray-200 h-2 rounded-md">
+            <div
+              className="bg-blue-500 h-full rounded-md"
+              style={{ width: `${uploadProgress}%` }}
+            ></div>
+          </div>
+        )}
         <div className="mt-6">
           <button
             type="submit"
@@ -110,11 +136,12 @@ const FastFoodForm = () => {
       {showModal && (
         <PreviewModal
           formData={formData}
-          onSave={() => {}}
-          onDeleteImage={onDeleteImage}
-          onClose={() => {}}
+          imagePreview={imagePreview}
+          setShowModal={setShowModal}
+          setFormData={setFormData}
+          setImagePreview={setImagePreview}
         />
-      )}{" "}
+      )}
     </div>
   );
 };
