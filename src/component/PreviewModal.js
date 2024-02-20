@@ -1,12 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { FaSave } from "react-icons/fa";
 import { ref as dbRef, set } from "firebase/database";
-import {
-  uploadBytes,
-  getDownloadURL,
-  ref,
-  uploadBytesResumable,
-} from "firebase/storage";
+import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { database, storage } from "../firebase.config";
 import { toast } from "react-toastify";
 
