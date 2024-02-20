@@ -1,4 +1,4 @@
-export const fieldConfig = [
+const fieldConfig = [
   {
     name: "category",
     label: "Category",
@@ -17,3 +17,5 @@ export const fieldConfig = [
   { name: "cost", label: "Cost", type: "number", required: true },
   { name: "stock", label: "Amount in Stock", type: "number", required: true },
 ];
+
+export default { fieldConfig };
